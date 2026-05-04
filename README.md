@@ -19,6 +19,7 @@ A Rails API application that processes student test results and performs End-of-
 - FactoryBot (test factories)
 - Whenever (cron scheduling)
 - SimpleCov (code coverage)
+- Kaminari (pagination)
 
 ## Setup
 
@@ -92,6 +93,34 @@ GET /api/v1/daily_result_statistics?date=2026-05-04
 GET /api/v1/monthly_result_averages
 GET /api/v1/monthly_result_averages?subject=Mathematics
 ```
+
+### 5. Statistics Summary (Dashboard)
+
+```
+GET /api/v1/statistics_summary
+```
+
+Returns an overall summary including total results, subject-wise breakdown (min, max, average), latest daily stats, and latest monthly averages.
+
+### 6. Top Performers
+
+```
+GET /api/v1/top_performers
+GET /api/v1/top_performers?subject=Mathematics
+GET /api/v1/top_performers?limit=5
+```
+
+Returns top-performing students ranked by average marks, with optional subject filtering and result limit.
+
+### Pagination
+
+All list endpoints support pagination via query parameters:
+
+```
+GET /api/v1/test_results?page=1&per_page=25
+```
+
+Response includes pagination headers: `X-Total-Count`, `X-Total-Pages`, `X-Current-Page`, `X-Per-Page`.
 
 ## Scheduled Jobs
 

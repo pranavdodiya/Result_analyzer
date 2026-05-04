@@ -1,6 +1,8 @@
 module Api
   module V1
     class TestResultsController < ApplicationController
+      include Paginatable
+
       def create
         test_result = TestResult.new(test_result_params)
 
@@ -16,7 +18,7 @@ module Api
         test_results = test_results.where(subject: params[:subject]) if params[:subject].present?
         test_results = test_results.for_date(Date.parse(params[:date])) if params[:date].present?
 
-        render json: test_results
+        render json: paginate(test_results)
       end
 
       private
