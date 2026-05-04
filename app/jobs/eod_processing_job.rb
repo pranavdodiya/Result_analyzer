@@ -2,10 +2,14 @@ class EodProcessingJob < ApplicationJob
   queue_as :default
 
   def perform(date: Date.today)
-    # Step 1: Calculate daily result statistics
+    Rails.logger.info "[EOD] Starting end-of-day processing for #{date}"
+
+    Rails.logger.info "[EOD] Calculating daily result statistics..."
     DailyResultStatisticsCalculator.new(date: date).call
 
-    # Step 2: Calculate monthly result averages (only runs on specific days)
+    Rails.logger.info "[EOD] Calculating monthly result averages..."
     MonthlyResultAveragesCalculator.new(date: date).call
+
+    Rails.logger.info "[EOD] End-of-day processing completed for #{date}"
   end
 end

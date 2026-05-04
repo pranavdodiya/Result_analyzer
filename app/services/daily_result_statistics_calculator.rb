@@ -4,17 +4,15 @@ class DailyResultStatisticsCalculator
   end
 
   def call
-    subjects = TestResult.for_date(@date).distinct.pluck(:subject)
+    results_by_subject = TestResult.for_date(@date)
+      .group(:subject)
+      .pluck(:subject, Arel.sql('MIN(marks)'), Arel.sql('MAX(marks)'), Arel.sql('COUNT(*)'))
 
-    subjects.each do |subject|
-      results = TestResult.for_date(@date).for_subject(subject)
-
-      next if results.empty?
-
+    results_by_subject.each do |subject, daily_low, daily_high, result_count|
       DailyResultStatistic.find_or_initialize_by(date: @date, subject: subject).tap do |stat|
-        stat.daily_low = results.minimum(:marks)
-        stat.daily_high = results.maximum(:marks)
-        stat.result_count = results.count
+        stat.daily_low = daily_low
+        stat.daily_high = daily_high
+        stat.result_count = result_count
         stat.save!
       end
     end

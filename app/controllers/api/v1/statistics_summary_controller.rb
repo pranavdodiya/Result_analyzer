@@ -14,16 +14,23 @@ module Api
       private
 
       def subject_summaries
-        TestResult.group(:subject).pluck(:subject).map do |subject|
-          results = TestResult.where(subject: subject)
-          {
-            subject: subject,
-            total_results: results.count,
-            overall_low: results.minimum(:marks),
-            overall_high: results.maximum(:marks),
-            average_marks: results.average(:marks)&.round(2)
-          }
-        end
+        TestResult.group(:subject)
+          .select(
+            'subject',
+            'COUNT(*) as total_results',
+            'MIN(marks) as overall_low',
+            'MAX(marks) as overall_high',
+            'ROUND(AVG(marks), 2) as average_marks'
+          )
+          .map do |r|
+            {
+              subject: r.subject,
+              total_results: r.total_results,
+              overall_low: r.overall_low,
+              overall_high: r.overall_high,
+              average_marks: r.average_marks.to_f
+            }
+          end
       end
 
       def latest_daily_stats
